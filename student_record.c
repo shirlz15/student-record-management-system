@@ -60,7 +60,7 @@ void addRecord() {
     struct StudentData stu;
     FILE *filePtr;
 
-    filePtr = fopen("records.txt", "a");
+    filePtr = fopen("records.txt", "a+");
 
     if (filePtr == NULL) {
         printf("Error opening records file.\n");
@@ -90,7 +90,7 @@ void displayRecords() {
     struct StudentData stu;
     FILE *filePtr;
 
-    filePtr = fopen("records.txt", "r");
+    filePtr = fopen("records.txt", "a+");
 
     if (filePtr == NULL) {
         printf("No records found.\n");

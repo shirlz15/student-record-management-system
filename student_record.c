@@ -26,6 +26,12 @@ void writeLog(char action[], int roll);
 int main() {
     int userChoice;
 
+    // Force file creation (important for online compilers)
+    FILE *initFile = fopen("records.txt", "w+");
+    if (initFile != NULL) {
+        fclose(initFile);
+    }
+
     do {
         printf("\n===== Student Record Management System =====\n");
         printf("1. Add Student Record\n");
@@ -36,20 +42,11 @@ int main() {
         scanf("%d", &userChoice);
 
         switch (userChoice) {
-            case 1:
-                addRecord();
-                break;
-            case 2:
-                displayRecords();
-                break;
-            case 3:
-                SearchRecord();
-                break;
-            case 4:
-                printf("Program exited.\n");
-                break;
-            default:
-                printf("Invalid choice. Try again.\n");
+            case 1: addRecord(); break;
+            case 2: displayRecords(); break;
+            case 3: SearchRecord(); break;
+            case 4: printf("Program exited.\n"); break;
+            default: printf("Invalid choice. Try again.\n");
         }
     } while (userChoice != 4);
 
@@ -136,7 +133,7 @@ void SearchRecord() {
         keyLower[i] = tolower(searchKey[i]);
     keyLower[strlen(searchKey)] = '\0';
 
-    filePtr = fopen("records.txt", "r");
+    filePtr = fopen("records.txt", "a+");
 
     if (filePtr == NULL) {
         printf("No records available.\n");

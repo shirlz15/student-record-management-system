@@ -15,14 +15,14 @@ struct StudentData {
     float totalMarks;
 };
 
-/* ------------ Function Declarations ----------- */
+/* -------- Function Declarations -------- */
 void addRecord();
 void displayRecords();
-void smartSearchRecord();
-char getAcademicStatus(float marks);
+void SearchRecord();
+char AcademicStatus(float marks);
 void writeLog(char action[], int roll);
 
-/* ---------------- Main Function ---------------- */
+/* ---------------- Main ---------------- */
 int main() {
     int userChoice;
 
@@ -43,13 +43,13 @@ int main() {
                 displayRecords();
                 break;
             case 3:
-                smartSearchRecord();
+                SearchRecord();
                 break;
             case 4:
                 printf("Program exited.\n");
                 break;
             default:
-                printf("Invalid option. Try again.\n");
+                printf("Invalid choice. Try again.\n");
         }
     } while (userChoice != 4);
 
@@ -62,23 +62,25 @@ void addRecord() {
 
     filePtr = fopen("records.txt", "a");
 
-    // Taking input from user
+    if (filePtr == NULL) {
+        printf("Error opening records file.\n");
+        return;
+    }
+
     printf("Enter Roll Number: ");
     scanf("%d", &stu.rollNo);
 
     printf("Enter Student Name: ");
     scanf(" %[^\n]", stu.studentName);
 
-    printf("Enter Total Marks: ");
+    printf("Enter Total Marks (0 - 100): ");
     scanf("%f", &stu.totalMarks);
 
-    // Writing data to file
     fprintf(filePtr, "%d %s %.2f\n",
             stu.rollNo, stu.studentName, stu.totalMarks);
 
     fclose(filePtr);
 
-    // Logging the action
     writeLog("Added record for", stu.rollNo);
 
     printf("Record added successfully.\n");
@@ -98,7 +100,6 @@ void displayRecords() {
     printf("\nRoll\tName\t\tMarks\tStatus\n");
     printf("-------------------------------------------\n");
 
-    // Reading data from file
     while (fscanf(filePtr, "%d %s %f",
                   &stu.rollNo, stu.studentName, &stu.totalMarks) != EOF) {
 
@@ -106,14 +107,13 @@ void displayRecords() {
                stu.rollNo,
                stu.studentName,
                stu.totalMarks,
-               getAcademicStatus(stu.totalMarks));
+               AcademicStatus(stu.totalMarks));
     }
 
     fclose(filePtr);
 }
 // Academic Status Analyzer
-char getAcademicStatus(float marks) {
-    // Checking performance based on marks
+char AcademicStatus(float marks) {
     if (marks < 40)
         return 'R';   // At Risk
     else if (marks >= 75)
@@ -122,7 +122,7 @@ char getAcademicStatus(float marks) {
         return 'P';   // Pass
 }
 // Smart Search (Partial + Case-Insensitive)
-void smartSearchRecord() {
+void SearchRecord() {
     struct StudentData stu;
     FILE *filePtr;
     char searchKey[30];
@@ -132,7 +132,6 @@ void smartSearchRecord() {
     printf("Enter name keyword to search: ");
     scanf(" %[^\n]", searchKey);
 
-    // Convert search key to lowercase
     for (int i = 0; searchKey[i]; i++)
         keyLower[i] = tolower(searchKey[i]);
     keyLower[strlen(searchKey)] = '\0';
@@ -147,12 +146,10 @@ void smartSearchRecord() {
     while (fscanf(filePtr, "%d %s %f",
                   &stu.rollNo, stu.studentName, &stu.totalMarks) != EOF) {
 
-        // Convert name to lowercase
         for (int i = 0; stu.studentName[i]; i++)
             nameLower[i] = tolower(stu.studentName[i]);
         nameLower[strlen(stu.studentName)] = '\0';
 
-        // Checking partial match
         if (strstr(nameLower, keyLower)) {
             printf("Found: %d %s %.2f\n",
                    stu.rollNo, stu.studentName, stu.totalMarks);
@@ -174,7 +171,11 @@ void writeLog(char action[], int roll) {
 
     logPtr = fopen("log.txt", "a");
 
-    // Writing log with time
+    if (logPtr == NULL) {
+        printf("Log file error.\n");
+        return;
+    }
+
     fprintf(logPtr, "%s Roll No %d at %s",
             action, roll, ctime(&currentTime));
 
